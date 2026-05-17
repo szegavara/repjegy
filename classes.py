@@ -50,6 +50,12 @@ class Járat(ABC):
         """Visszaadja a járat kapacitását."""
         return self._kapacitás
 
+    def __str__(self):
+        return (
+            f"{self.járatszám} -> {self.célállomás}, Indulás: {self.indulás_idő:%Y-%m-%d %H:%M}, "
+            f"Ár: {self.jegyár} Ft, Kapacitás: {self.kapacitás}"
+        )
+
 class BelföldiJarat(Járat):
     """
     Belföldi járatok osztálya. Olcsóbb és általában rövidebb járatok.

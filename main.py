@@ -71,7 +71,10 @@ def main():
             for idx, járat in enumerate(szűrt_járatok, 1):
                 booked_count = sum(1 for f in légitársaság.foglalások if f.járat.járatszám == járat.járatszám)
                 szabad_helyek = járat.kapacitás - booked_count
-                print(f"{idx}. {járat.járatszám} -> {járat.célállomás}, Ár: {járat.jegyár} Ft, Szabad helyek: {szabad_helyek}/{járat.kapacitás}")
+                print(
+                f"{idx}. {járat.járatszám} -> {járat.célállomás}, Indulás: {járat.indulás_idő:%Y-%m-%d %H:%M}, "
+                f"Ár: {járat.jegyár} Ft, Szabad helyek: {szabad_helyek}/{járat.kapacitás}"
+            )
             
             járat_index_input = input("Válassz járat számot: ").strip().lower()
             
@@ -125,7 +128,10 @@ def main():
                 print("Nincsenek foglalások.")
             else:
                 for f in foglalások:
-                    print(f"ID: {f.foglalás_id}, Utazó: {f.utazó_név}, Járat: {f.járat.járatszám} -> {f.járat.célállomás}, Ár: {f.jegyár} Ft")
+                    print(
+                        f"ID: {f.foglalás_id}, Utazó: {f.utazó_név}, Járat: {f.járat.járatszám} -> {f.járat.célállomás}, "
+                        f"Indulás: {f.járat.indulás_idő:%Y-%m-%d %H:%M}, Ár: {f.jegyár} Ft"
+                    )
         elif choice == "4":
             print("Viszlát!")
             break
