@@ -43,29 +43,56 @@ def main():
         choice = input("Válassz: ").strip()
 
         if choice == "1":
-            # Jegy foglalása - járatlista megjelenítésével
-            if not légitársaság.járatok:
-                print("Hiba: Nincsenek elérhető járatok")
+            # Jegy foglalása - járattípus választás után
+            print("\nJárattípus választása:")
+            print("1. Belföldi járatok")
+            print("2. Nemzetközi járatok")
+            print("(Írj 'back'-et bármely lépésnél a menübe való visszatéréshez)")
+            járattípus_input = input("Válassz (1-2): ").strip().lower()
+            
+            if járattípus_input == "back":
                 continue
             
-            print("\nElérhető járatok:")
-            for idx, járat in enumerate(légitársaság.járatok, 1):
+            if járattípus_input == "1":
+                szűrt_járatok = [j for j in légitársaság.járatok if isinstance(j, BelföldiJarat)]
+                járattípus_név = "Belföldi"
+            elif járattípus_input == "2":
+                szűrt_járatok = [j for j in légitársaság.járatok if isinstance(j, NemzetkoziJarat)]
+                járattípus_név = "Nemzetközi"
+            else:
+                print("Hiba: Érvénytelen választás")
+                continue
+            
+            if not szűrt_járatok:
+                print(f"Hiba: Nincsenek elérhető {járattípus_név.lower()} járatok")
+                continue
+            
+            print(f"\nElérhető {járattípus_név} járatok:")
+            for idx, járat in enumerate(szűrt_járatok, 1):
                 booked_count = sum(1 for f in légitársaság.foglalások if f.járat.járatszám == járat.járatszám)
                 szabad_helyek = járat.kapacitás - booked_count
                 print(f"{idx}. {járat.járatszám} -> {járat.célállomás}, Ár: {járat.jegyár} Ft, Szabad helyek: {szabad_helyek}/{járat.kapacitás}")
             
-            járat_index_input = input("Válassz járat számot: ").strip()
+            járat_index_input = input("Válassz járat számot: ").strip().lower()
+            
+            if járat_index_input == "back":
+                continue
+            
             try:
                 járat_index = int(járat_index_input) - 1
-                if járat_index < 0 or járat_index >= len(légitársaság.járatok):
+                if járat_index < 0 or járat_index >= len(szűrt_járatok):
                     print("Hiba: Érvénytelen járat választás")
                     continue
-                kiválasztott_járat = légitársaság.járatok[járat_index]
+                kiválasztott_járat = szűrt_járatok[járat_index]
             except ValueError:
                 print("Hiba: Érvénytelen szám")
                 continue
             
             utazó_név = input("Utazó neve: ").strip()
+            
+            if utazó_név.lower() == "back":
+                continue
+            
             if not utazó_név:
                 print("Hiba: Utazó név kötelező")
                 continue
@@ -76,7 +103,11 @@ def main():
                 print(f"Hiba: {e}")
         elif choice == "2":
             # Foglalás lemondása - csak létező foglalásokra
-            id_input = input("Foglalás ID: ").strip()
+            id_input = input("Foglalás ID (vagy 'back' a menübe): ").strip().lower()
+            
+            if id_input == "back":
+                continue
+            
             try:
                 foglalás_id = int(id_input)
             except ValueError:
@@ -90,9 +121,13 @@ def main():
         elif choice == "3":
             # Foglalások listázása
             foglalások = légitársaság.foglalások_listázása()
-            for f in foglalások:
-                print(f"ID: {f.foglalás_id}, Utazó: {f.utazó_név}, Járat: {f.járat.járatszám} -> {f.járat.célállomás}, Ár: {f.jegyár} Ft")
+            if not foglalások:
+                print("Nincsenek foglalások.")
+            else:
+                for f in foglalások:
+                    print(f"ID: {f.foglalás_id}, Utazó: {f.utazó_név}, Járat: {f.járat.járatszám} -> {f.járat.célállomás}, Ár: {f.jegyár} Ft")
         elif choice == "4":
+            print("Viszlát!")
             break
         else:
             print("Érvénytelen választás")
