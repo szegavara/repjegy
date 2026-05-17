@@ -43,17 +43,34 @@ def main():
         choice = input("Válassz: ").strip()
 
         if choice == "1":
-            # Jegy foglalása - adatvalidációval
-            járatszám = input("Járatszám: ").strip()
-            if not járatszám:
-                print("Hiba: Járatszám kötelező")
+            # Jegy foglalása - járatlista megjelenítésével
+            if not légitársaság.járatok:
+                print("Hiba: Nincsenek elérhető járatok")
                 continue
+            
+            print("\nElérhető járatok:")
+            for idx, járat in enumerate(légitársaság.járatok, 1):
+                booked_count = sum(1 for f in légitársaság.foglalások if f.járat.járatszám == járat.járatszám)
+                szabad_helyek = járat.kapacitás - booked_count
+                print(f"{idx}. {járat.járatszám} -> {járat.célállomás}, Ár: {járat.jegyár} Ft, Szabad helyek: {szabad_helyek}/{járat.kapacitás}")
+            
+            járat_index_input = input("Válassz járat számot: ").strip()
+            try:
+                járat_index = int(járat_index_input) - 1
+                if járat_index < 0 or járat_index >= len(légitársaság.járatok):
+                    print("Hiba: Érvénytelen járat választás")
+                    continue
+                kiválasztott_járat = légitársaság.járatok[járat_index]
+            except ValueError:
+                print("Hiba: Érvénytelen szám")
+                continue
+            
             utazó_név = input("Utazó neve: ").strip()
             if not utazó_név:
                 print("Hiba: Utazó név kötelező")
                 continue
             try:
-                ár = légitársaság.jegy_foglalása(járatszám, utazó_név)
+                ár = légitársaság.jegy_foglalása(kiválasztott_járat.járatszám, utazó_név)
                 print(f"Foglalás sikeres, ár: {ár} Ft")
             except ValueError as e:
                 print(f"Hiba: {e}")
